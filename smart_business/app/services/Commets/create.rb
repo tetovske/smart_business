@@ -1,21 +1,23 @@
 # frozen_string_literal: true
 
-module Adverts
-  class Patch < Basics::BaseInteractor
+module Comment
+  class Create < Basics::BaseInteractor
     extend Dry::Initializer
     include Dry::Monads[:try, :result, :do, :maybe]
 
-    REQUIRE_PARAMS = %w[id].freeze
+    REQUIRE_PARAMS = %w[].freeze
 
     param :json_params, proc(&:to_h)
 
     def call
       yield params_presence
       yield check_req_params
-      user = yield find_user
-      upd_user = yield update_model(user, params.except(:id))
+      comment = yield build
+      comment = yield append_attributes(comment, params)
+      yield validate_attributes(comment)
+      saved_comment = yield save_model(comment)
 
-      Success(upd_user)
+      Success(saved_comment)
     end
 
     private
@@ -28,8 +30,8 @@ module Adverts
       REQUIRE_PARAMS.all? { |p| json_params.key?(p) } ? Success() : Failure(:require_params_missed)
     end
 
-    def find_user
-      Success(User.where(id: json_params[:id]))
+    def build
+      Success(Comment.new)
     end
 
     def append_attributes(model, params)
@@ -41,10 +43,10 @@ module Adverts
       model.valid? ? Success(model) : Failure(model.errors)
     end
 
-    def update_model(model, params)
-      Try { model.update(params) ? Success(model) : Failure(:cant_update_model) }
+    def save_model(model)
+      Try { model.save ? Success(model) : Failure(:cant_save_model) }
           .to_result
-          .or Failure(:failed_to_update)
+          .or Failure(:booking_already_exists)
     end
   end
 end

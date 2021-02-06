@@ -1,8 +1,5 @@
-# frozen_string_literal: true
-
-module Adverts
-  class Patch < Basics::BaseInteractor
-    extend Dry::Initializer
+module Comment
+  class Update < Service
     include Dry::Monads[:try, :result, :do, :maybe]
 
     REQUIRE_PARAMS = %w[id].freeze
@@ -12,10 +9,10 @@ module Adverts
     def call
       yield params_presence
       yield check_req_params
-      user = yield find_user
-      upd_user = yield update_model(user, params.except(:id))
+      comment = yield find_advert
+      upd_comment = yield update_model(comment, params.except(:id))
 
-      Success(upd_user)
+      Success(upd_comment)
     end
 
     private
@@ -28,8 +25,8 @@ module Adverts
       REQUIRE_PARAMS.all? { |p| json_params.key?(p) } ? Success() : Failure(:require_params_missed)
     end
 
-    def find_user
-      Success(User.where(id: json_params[:id]))
+    def find_advert
+      Success(Comment.where(id: json_params[:id]))
     end
 
     def append_attributes(model, params)

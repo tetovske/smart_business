@@ -5,14 +5,13 @@ module Adverts
     extend Dry::Initializer
     include Dry::Monads[:try, :result, :do, :maybe]
 
-    REQUIRE_PARAMS = %w[expert_id].freeze
+    REQUIRE_PARAMS = %w[].freeze
 
     param :json_params, proc(&:to_h)
 
     def call
       yield params_presence
       yield check_req_params
-      params = yield convert_date
       booking = yield build
       booking = yield append_attributes(booking, params)
       yield validate_attributes(booking)
@@ -29,13 +28,6 @@ module Adverts
 
     def check_req_params
       REQUIRE_PARAMS.all? { |p| json_params.key?(p) } ? Success() : Failure(:require_params_missed)
-    end
-
-    def convert_date
-      converter.call(json_params).either(
-          ->(conv_params) { Success(conv_params) },
-          ->(err) { Success(json_params) }
-      )
     end
 
     def build

@@ -52,7 +52,13 @@ module Auth
     end
 
     def user_info
-      token = params.head
+      user = User.find_by(jwt_token: request.headers['token'])
+
+      if user
+        render_serialized user.adverts
+      else
+        render_error messages: 'unknown error'
+      end
     end
 
     private
@@ -65,4 +71,15 @@ module Auth
       params.require(:_jsonapi).permit!
     end
   end
+
+    private
+
+    def check_params(params)
+      params.keys.all? { |par| AUTH_PARAMS.include?(par.to_sym) }
+    end
+
+    def required_params
+      params.require(:_jsonapi).permit!
+    end
+
 end
