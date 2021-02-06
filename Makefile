@@ -24,3 +24,8 @@ app-db-rollback:
 
 app-db-ash:
 	docker-compose run --rm smart-business-db psql
+
+app-db-seed:
+	docker-compose run --rm smart-business-service bundle exec rails db:seed
+
+app-db-reset: app-db-rollback app-db-migrate app-db-seed

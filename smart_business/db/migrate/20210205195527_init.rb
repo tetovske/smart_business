@@ -11,6 +11,8 @@ class Init < ActiveRecord::Migration[6.0]
           t.column :phone, :string
           t.column :login, :string
           t.column :password, :string
+          t.column :jwt_token, :string
+          t.datetime :registration_date
 
           t.string :email,              null: false, default: ""
           t.string :encrypted_password, null: false, default: ""

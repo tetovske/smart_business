@@ -50,6 +50,8 @@ ActiveRecord::Schema.define(version: 2021_02_05_195527) do
     t.string "phone"
     t.string "login"
     t.string "password"
+    t.string "jwt_token"
+    t.datetime "registration_date"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
