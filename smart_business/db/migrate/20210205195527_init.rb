@@ -35,12 +35,24 @@ class Init < ActiveRecord::Migration[6.0]
           t.string :advert_code
           t.references :user, foreign_key: { to_table: :users }
           t.string :title
-          t.string
+          t.string :pic_url
+          t.string :description
           t.datetime :time_slot, default: -> { 'CURRENT_TIMESTAMP' }, null: false
+          t.timestamps
+        end
+        create_table :adverts_ref do |t|
+          t.references :source_ad, foreign_key: { to_table: :adverts }
+          t.references :linked_ad, foreign_key: { to_table: :adverts }
           t.timestamps
         end
         create_table :black_lists do |t|
           t.string :token
+          t.timestamps
+        end
+        create_table :comments do |t|
+          t.string :text
+          t.references :user, foreign_key: { to_table: :users }
+          t.references :advert, foreign_key: { to_table: :adverts }
           t.timestamps
         end
       end
@@ -50,6 +62,8 @@ class Init < ActiveRecord::Migration[6.0]
         drop_table :adverts
         drop_table :users
         drop_table :black_lists
+        drop_table :comments
+        drop_table :adverts_ref
       end
     end
   end

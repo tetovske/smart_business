@@ -18,16 +18,38 @@ ActiveRecord::Schema.define(version: 2021_02_05_195527) do
   create_table "adverts", force: :cascade do |t|
     t.string "advert_code"
     t.bigint "user_id"
+    t.string "title"
+    t.string "pic_url"
+    t.string "description"
     t.datetime "time_slot", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_adverts_on_user_id"
   end
 
+  create_table "adverts_ref", force: :cascade do |t|
+    t.bigint "source_ad_id"
+    t.bigint "linked_ad_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["linked_ad_id"], name: "index_adverts_ref_on_linked_ad_id"
+    t.index ["source_ad_id"], name: "index_adverts_ref_on_source_ad_id"
+  end
+
   create_table "black_lists", force: :cascade do |t|
     t.string "token"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.string "text"
+    t.bigint "user_id"
+    t.bigint "advert_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["advert_id"], name: "index_comments_on_advert_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -62,6 +84,10 @@ ActiveRecord::Schema.define(version: 2021_02_05_195527) do
   end
 
   add_foreign_key "adverts", "users"
+  add_foreign_key "adverts_ref", "adverts", column: "linked_ad_id"
+  add_foreign_key "adverts_ref", "adverts", column: "source_ad_id"
+  add_foreign_key "comments", "adverts"
+  add_foreign_key "comments", "users"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
 end
