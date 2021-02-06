@@ -26,6 +26,14 @@ class User < ApplicationRecord
     grant_role(Role::ADMIN_ROLE_NAME)
   end
 
+  def make_customer
+    grant_role(Role::CUSTOMER_ROLE_NAME)
+  end
+
+  def make_perfomer
+    grant_role(Role::PERFOMER_ROLE_NAME)
+  end
+
   def revoke_admin
     revoke_role(Role::ADMIN_ROLE_NAME)
   end

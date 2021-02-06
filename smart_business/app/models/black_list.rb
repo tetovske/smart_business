@@ -7,7 +7,6 @@ class BlackList < ApplicationRecord
     end
 
     def check_token(token)
-      token = restore_jwt_token(token)
       JwtDecoder.call.decode_key(token).bind do |data|
         exp = data['expires'].to_time
         return true if (exp - Time.now).positive? && !BlackList.in_black_list?(token)
@@ -34,10 +33,6 @@ class BlackList < ApplicationRecord
       JwtDecoder.call.decode_key(token).bind do |val|
         return User.find_by(phone: val['phone'])
       end
-    end
-
-    def restore_jwt_token(token)
-      "eyJhbGciOiJIUzI1NiJ9.#{token}"
     end
   end
 end

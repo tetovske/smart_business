@@ -13,6 +13,8 @@ class Init < ActiveRecord::Migration[6.0]
           t.column :password, :string
           t.column :jwt_token, :string
           t.datetime :registration_date
+          t.column :city, :string
+          t.datetime :birth_date
 
           t.string :email,              null: false, default: ""
           t.string :encrypted_password, null: false, default: ""
@@ -32,6 +34,8 @@ class Init < ActiveRecord::Migration[6.0]
         create_table :adverts do |t|
           t.string :advert_code
           t.references :user, foreign_key: { to_table: :users }
+          t.string :title
+          t.string
           t.datetime :time_slot, default: -> { 'CURRENT_TIMESTAMP' }, null: false
           t.timestamps
         end

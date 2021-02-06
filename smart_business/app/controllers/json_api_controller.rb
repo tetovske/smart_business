@@ -1,4 +1,4 @@
-class JsonApiController < ApplicationController
+module JsonApiController
   extend ActiveSupport::Concern
 
   included do

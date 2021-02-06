@@ -1,7 +1,9 @@
 class Role < ApplicationRecord
   DEFAULT_USER_ROLE_NAME = 'user'
   ADMIN_ROLE_NAME = 'admin'
-  ALL_ROLES = %w[user admin].freeze
+  CUSTOMER_ROLE_NAME = 'customer'
+  PERFOMER_ROLE_NAME = 'perfomer'
+  ALL_ROLES = %w[user admin perfomer customer].freeze
 
   has_many :user_roles, dependent: :destroy
   has_many :users, through: :user_roles, dependent: :destroy

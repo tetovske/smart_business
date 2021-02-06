@@ -1,8 +1,11 @@
 module Auth
-  class SessionController < JsonApiController
+  class SessionController < ApplicationController
+    include JsonApiController
     include Dry::Monads[:try, :result, :do, :maybe]
 
-    AUTH_PARAMS = [:login, :password, :phone, :email]
+    before_action :authenticate_user, only: [:user_info]
+
+    AUTH_PARAMS = [:login, :password, :phone, :email, :birth_date, :city]
 
     def signup
       required_params
@@ -46,6 +49,10 @@ module Auth
       else
         render json: { message: 'invalid params!' }
       end
+    end
+
+    def user_info
+      token = params.head
     end
 
     private
