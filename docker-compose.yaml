@@ -1,0 +1,57 @@
+version: "3.7"
+
+x-core-context: &smart-business-context
+  context: ./smart_business
+  dockerfile: Dockerfile
+
+x-core-volumes: &smart-business-volumes
+  volumes:
+    - smart-business-service:/usr/local/bundle:cached
+    - .artifacts/:/tmp/artifacts:cached
+    - ./smart_business:/app:cached
+
+x-core-env: &smart-business-env
+  RSA_PUBLIC_DIR: /tmp/artifacts
+  RSA_PRIVATE_DIR: /tmp/artifacts
+  DATABASE_URL: postgresql://postgres@smart-business-db/smart_business_dev
+  RAILS_ENV: development
+  RAILS_LOG_TO_STDOUT: 'true'
+  RAILS_SERVE_STATIC_FILES: 'true'
+  JWT_EXPIRE_TIME: 30
+  SECRET_KEY_BASE:
+  SERVICE_NAME: smart-business-service
+
+x-db-env: &db-env
+  PGPASSWORD_ADMIN: postgres
+  PGPASSWORD_STANDBY: postgres
+  PGPASSWORD_SUPERUSER: postgres
+  POSTGRES_HOST_AUTH_METHOD: trust
+
+services:
+  smart-business-db:
+    container_name: db-smart-business
+    image: postgres:10-alpine
+    environment:
+      <<: *db-env
+    volumes:
+      - smart-business-db:/var/lib/postgresql/data:cached
+      - .artifacts/:/tmp/artifacts/:cached
+    ports:
+      - "5431:5432"
+
+  smart-business-service:
+    container_name: smart-business-service
+    <<: *smart-business-volumes
+    environment:
+      <<: *smart-business-env
+    build:
+      <<: *smart-business-context
+    depends_on:
+      - smart-business-db
+    command: ash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b 0.0.0.0"
+    ports:
+      - "8080:3000"
+
+volumes:
+  smart-business-db:
+  smart-business-service:
